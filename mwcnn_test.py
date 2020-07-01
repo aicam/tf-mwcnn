@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-
+import matplotlib.pyplot as plt
 from mwcnn import IWT, MWCNN
 
 
@@ -21,13 +21,14 @@ def test_iwt():
 
 def test_mwcnn():
     model = MWCNN(
-        n_filters_per_scale=[4, 8, 16],
+        n_filters_per_scale=[2, 4, 8],
         n_convs_per_scale=[2, 2, 2],
         n_first_convs=2,
-        first_conv_n_filters=4,
+        first_conv_n_filters=2,
     )
-    shape = [1, 32, 32, 1]
+    shape = [1, 80, 64, 1]
     res = model(tf.zeros(shape))
+
     assert res.shape.as_list() == shape
 
 def test_mwcnn_conference():
@@ -42,19 +43,21 @@ def test_mwcnn_conference():
     res = model(tf.zeros(shape))
     assert res.shape.as_list() == shape
 
-def test_mwcnn_change():
+def test_mwcnn_change(x):
     model = MWCNN(
         n_filters_per_scale=[4, 8, 16],
         n_convs_per_scale=[2, 2, 2],
         n_first_convs=2,
         first_conv_n_filters=4,
     )
-    x = tf.random.normal((1, 64, 64, 1))
     y = x
-    model(x)
+    # model(x)
     before = [v.numpy() for v in model.trainable_variables]
-    model.compile(optimizer='sgd', loss='mse')
-    model.train_on_batch(x, y)
+    model.compile(optimizer='adam', loss='mse')
+    for r in range(82):
+        model.train_on_batch(x[r], x[r])
     after = [v.numpy() for v in model.trainable_variables]
     for b, a in zip(before, after):
         assert np.any(np.not_equal(b, a))
+    plt.imshow(model.predict(x[10]).reshape(64, 80))
+    plt.show()
