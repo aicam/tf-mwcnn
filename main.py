@@ -13,6 +13,7 @@ Y = []
 
 for file in onlyfiles:
     f = open('./dataset/' + file)
+
     x_ = []
     for l in f:
         x = np.array([item.rstrip() for item in l.split()])

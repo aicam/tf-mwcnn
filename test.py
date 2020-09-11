@@ -1,26 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from os import listdir
-# silver spayer, pomad alpha, zinc
-from os.path import isfile, join
-import time
-mypath = './dataset'
-onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
-X = []
-Y = []
-
-for file in onlyfiles:
-    f = open('./dataset/' + file)
-    x_ = []
-    for l in f:
-        x = np.array([item.rstrip() for item in l.split()])
-        x.astype(np.float)
-        x_.append(x)
-    X.append(np.array(x_).reshape([-1, 64, 80]).astype(np.float32))
-    # test_mwcnn_change(X)
-    f.close()
+from select_area import *
 import cv2
-filename = 'results/2/3.png'
+filename = './results/Rec--000098_AmpAll/3.png'
 img = cv2.imread(filename)
 gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 gray = np.float32(gray)
@@ -28,9 +10,27 @@ dst = cv2.cornerHarris(gray,2,3,0.04)
 
 #result is dilated for marking the corners, not important
 dst = cv2.dilate(dst,None)
-
+criteria = (cv2.TERM_CRITERIA_EPS, )
 # Threshold for an optimal value, it may vary depending on the image.
-img[dst>0.1*dst.max()]=[0,0,255]
-cv2.imshow('dst',img)
-if cv2.waitKey(0) & 0xff == 27:
-    cv2.destroyAllWindows()
+corner_matrix = dst>0.05*dst.max()
+corner_matrix = corner_matrix.astype(np.int32)
+cells, start_point, end_point = corner_matrix_process(corner_matrix)
+# img = cv2.rectangle(img, start_point, end_point, (0, 0, 255), 2)
+# img[cells[:,0], cells[:,1]]=[0,0,255]
+# font                   = cv2.FONT_HERSHEY_SIMPLEX
+# bottomLeftCornerOfText = (np.min(cells , axis=0)[1], np.min(cells, axis=0)[0] - 5)
+# print(bottomLeftCornerOfText)
+# fontScale              = 0.6
+# fontColor              = (0,0,255)
+# lineType               = 2
+# cv2.putText(img,'82%',
+#     bottomLeftCornerOfText,
+#     font,
+#     fontScale,
+#     fontColor,
+#     lineType)
+plt.imshow(img)
+plt.show()
+# cv2.imshow('dst',img)
+# if cv2.waitKey(0) & 0xff == 27:
+#     cv2.destroyAllWindows()
