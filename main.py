@@ -10,7 +10,7 @@ mypath = './dataset'
 onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 X = []
 Y = []
-
+LBS = 12
 for file in onlyfiles:
     f = open('./dataset/' + file)
 
