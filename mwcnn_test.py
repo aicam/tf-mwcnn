@@ -33,7 +33,7 @@ def test_mwcnn():
 
 def test_mwcnn_conference():
     model = MWCNN(
-        n_filters_per_scale=[4, 8, 8],
+        n_filters_per_scale=[4, 16, 16],
         n_convs_per_scale=[2, 2, 2],
         n_first_convs=0,
         first_conv_n_filters=0,
